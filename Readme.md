@@ -18,14 +18,15 @@ $ heroku plugins:update git://github.com/cloudcastle/heroku-rails-deploy.git
 ### Usage
 
 Enterprise Deployment includes:
-1) Checking new database migrations
-2) * Running database backup (if new migrations exist)
-3) * Enabling maintenance (if new migrations exist)
-4) Git push
-5) * Running migrations (if exist)
-6) * Disabling maintenance (if new migrations exist)
 
-* steps are optional
+1. Checking new database migrations
+2. ** Running database backup (if new migrations exist)
+3. ** Enabling maintenance (if new migrations exist)
+4. Git push
+5. ** Running migrations (if exist)
+6. ** Disabling maintenance (if new migrations exist)
+
+** steps are optional
 
 
 ```bash
