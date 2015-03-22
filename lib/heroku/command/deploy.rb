@@ -51,9 +51,9 @@ class Heroku::Command::Deploy < Heroku::Command::BaseWithApp
       ENV["PGSSLMODE"]  = "require"
       sql = %Q(-c "select * from schema_migrations order by version desc limit 1")
       cmd = "psql -t -U #{uri.user} -h #{uri.host} -p #{uri.port || 5432} #{sql} #{uri.path[1..-1]}"
-      last_run_migration_date = %x{ #{cmd} 2>&1 }.strip
+      last_remote_migration_date = %x{ #{cmd} 2>&1 }.strip
       last_local_migration_date = %x{ ls -1 ./db/migrate/ | cut -d_ -f 1 2>&1 }.strip
-      require_migration = last_local_migration_date == last_run_migration_date
+      require_migration = last_local_migration_date > last_remote_migration_date
     end
 
     if require_migration
