@@ -22,7 +22,7 @@ class Heroku::Command::Deploy < Heroku::Command::BaseWithApp
 
     #checking deploy needs
     last_local_commit = git("rev-parse HEAD")
-    last_remote_commit = git("ls-remote --heads #{remote} | cut -d\\\t -f 1")
+    last_remote_commit = git("ls-remote https://git.heroku.com/#{app}.git | head -n 1 | cut -d\\\t -f 1")
     if last_local_commit == last_remote_commit
       display("\e[32mEverything up-to-date. Nothing to deploy.\e[0m")
       exit
