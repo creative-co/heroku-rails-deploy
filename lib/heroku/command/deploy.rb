@@ -22,7 +22,7 @@ class Heroku::Command::Deploy < Heroku::Command::BaseWithApp
 
     #checking deploy needs
     last_local_commit = git("rev-parse HEAD")
-    last_remote_commit = git("ls-remote --heads staging | cut -d\\\t -f 1")
+    last_remote_commit = git("ls-remote --heads #{remote} | cut -d\\\t -f 1")
     if last_local_commit == last_remote_commit
       display("\e[32mEverything up-to-date. Nothing to deploy.\e[0m")
       exit
@@ -49,11 +49,11 @@ class Heroku::Command::Deploy < Heroku::Command::BaseWithApp
       uri = URI.parse(url)
       ENV["PGPASSWORD"] = uri.password
       ENV["PGSSLMODE"]  = "require"
-      sql = %Q(-c "select * from schema_migrations order by version desc limit 1")
+      sql = %Q(-c "select * from schema_migrations order by version desc")
       cmd = "psql -t -U #{uri.user} -h #{uri.host} -p #{uri.port || 5432} #{sql} #{uri.path[1..-1]}"
-      last_remote_migration_date = %x{ #{cmd} 2>&1 }.strip
-      last_local_migration_date = %x{ ls -1 ./db/migrate/ | tail -1 | cut -d_ -f 1 2>&1 }.strip
-      require_migration = last_local_migration_date > last_remote_migration_date
+      last_remote_migration_dates = %x{ #{cmd} 2>&1 }.split("\n").map(&:strip)
+      last_local_migration_dates = %x{ ls -1 ./db/migrate/ | cut -d_ -f 1 2>&1 }.split("\n").map(&:strip)
+      require_migration = (last_local_migration_dates - last_remote_migration_dates).length > 0
     end
 
     if require_migration
